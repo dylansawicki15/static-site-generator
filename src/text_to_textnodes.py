@@ -5,10 +5,15 @@ from split_delimiter import split_delimiter
 def text_to_textnodes(text: str) -> list[TextNode]:
     nodes = [TextNode(text, TextType.TEXT)]
     
-    # Use split_delimiter for comma splitting
     nodes = split_delimiter(nodes, ",", TextType.TEXT)
+    normalized_nodes: list[TextNode] = []
+    for node in nodes:
+        if node.text_type == TextType.TEXT:
+            normalized_nodes.append(TextNode(node.text.lstrip(), TextType.TEXT))
+        else:
+            normalized_nodes.append(node)
+    nodes = normalized_nodes
     
-    # Process markdown delimiters with alternating behavior
     for delimiter, text_type in [("**", TextType.BOLD), ("_", TextType.ITALIC), ("`", TextType.CODE)]:
         new_nodes = []
         for node in nodes:
@@ -21,7 +26,6 @@ def text_to_textnodes(text: str) -> list[TextNode]:
                 new_nodes.append(node)
             else:
                 for i, part in enumerate(parts):
-                    part = part.strip()
                     if part == "":
                         continue
                     if i % 2 == 0:
@@ -30,8 +34,15 @@ def text_to_textnodes(text: str) -> list[TextNode]:
                         new_nodes.append(TextNode(part, text_type))
         nodes = new_nodes
     
-    # Process images and links
     nodes = split_nodes_image(nodes)
     nodes = split_nodes_link(nodes)
-    
-    return nodes
+    normalized: list[TextNode] = []
+    for node in nodes:
+        if node.text_type == TextType.TEXT:
+            trimmed = node.text.strip()
+            if trimmed == "":
+                continue
+            normalized.append(TextNode(trimmed, TextType.TEXT))
+        else:
+            normalized.append(node)
+    return normalized

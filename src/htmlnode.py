@@ -26,7 +26,7 @@ class LeafNode(HTMLNode):
             raise ValueError("LeafNode must have a value")
         if self.tag is None:
             return self.value
-        return f"<{self.tag}{' ' if self.props else ''}{self.props_to_html()}>{self.value}</{self.tag}>"
+        return f"<{self.tag}{' ' if self.props else ''}{self.props_to_html()}>{self.value if isinstance(self.value, str) else self.value.to_html()}</{self.tag}>"
 
 class ParentNode(HTMLNode):
     def __init__(self, tag, children, props=None):
@@ -36,5 +36,5 @@ class ParentNode(HTMLNode):
             raise ValueError("ParentNode must have a tag")
         if len(self.children) == 0:
             raise ValueError("ParentNode must have at least one child")
-        return f"<{self.tag}{' ' if self.props else ''}{self.props_to_html()}>{''.join([child.to_html() for child in self.children])}</{self.tag}>"
+        return f"<{self.tag}{' ' if self.props else ''}{self.props_to_html()}>{''.join([child if isinstance(child, str) else child.to_html() for child in self.children])}</{self.tag}>"
     
