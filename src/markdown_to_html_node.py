@@ -84,7 +84,6 @@ def block_to_html_node(block: str, block_type: BlockType) -> HTMLNode:
                     new_content = without_nl[removal:]
                     dedented_lines.append(new_content + ("\n" if has_newline else ""))
             inner = "".join(dedented_lines)
-        # trim trailing spaces/tabs at end while preserving final newline
         if inner.endswith(" ") or inner.endswith("\t"):
             inner = inner.rstrip(" \t")
         return ParentNode("pre", [LeafNode("code", inner)])
